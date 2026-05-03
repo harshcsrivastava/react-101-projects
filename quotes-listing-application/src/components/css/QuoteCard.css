@@ -1,0 +1,107 @@
+.quote-card {
+    width: 280px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    font-family: "Inter", sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Header */
+.title {
+    font-size: 14px;
+    letter-spacing: 2px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.divider span {
+    height: 2px;
+    width: 20px;
+    background: #000;
+    display: inline-block;
+}
+
+.divider .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+/* Image */
+.card-image {
+    margin: 16px 0;
+}
+
+.card-image img {
+    width: 120px;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Quote */
+.quote-content {
+    text-align: left;
+    margin-top: 10px;
+}
+
+.quote-mark {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.quote-text {
+    font-size: 16px;
+    line-height: 1.4;
+    font-weight: 500;
+    margin-top: 4px;
+}
+
+/* Author */
+.author-section {
+    margin-top: 16px;
+}
+
+.author {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Footer pattern */
+.card-footer-pattern {
+    margin-top: 16px;
+    height: 20px;
+    background: repeating-linear-gradient(
+        90deg,
+        #000,
+        #000 4px,
+        transparent 4px,
+        transparent 8px
+    );
+    border-radius: 4px;
+}
+
+/* Variants (for v1, v2, etc.) */
+.quote-card.v1 {
+    background: #fff;
+}
+
+.quote-card.v2 {
+    background: #fff7e6;
+}
+
+.quote-card.v3 {
+    background: #f0fdf4;
+}
