@@ -1,0 +1,37 @@
+.joke-card {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 18px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #fdfbfb, #ebedee);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+    font-family: "Poppins", sans-serif;
+    transition: transform 0.2s ease;
+}
+
+.joke-card:hover {
+    transform: translateY(-4px);
+}
+
+.joke-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+    color: #7f8c8d;
+}
+
+.joke-id {
+    font-weight: 600;
+}
+
+.joke-category {
+    font-style: italic;
+    color: #2980b9;
+}
+
+.joke-content {
+    font-size: 1.1rem;
+    line-height: 1.5;
+    color: #2c3e50;
+}
