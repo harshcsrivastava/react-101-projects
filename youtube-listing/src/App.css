@@ -1,0 +1,193 @@
+
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap");
+
+:root {
+    --bg-main: #090b14;
+    --bg-soft: #11172a;
+    --bg-card: #121a31;
+    --text-main: #f5f7ff;
+    --text-muted: #aab3cd;
+    --stroke: #283454;
+    --brand: #ff6a3d;
+    --brand-2: #ffb26b;
+    --focus: #67e8f9;
+    --success: #10b981;
+    --shadow: 0 20px 50px rgba(3, 7, 18, 0.45);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: "Manrope", sans-serif;
+    color: var(--text-main);
+    background:
+        radial-gradient(circle at 12% 10%, rgba(255, 106, 61, 0.16), transparent 38%),
+        radial-gradient(circle at 84% 2%, rgba(103, 232, 249, 0.14), transparent 30%),
+        linear-gradient(165deg, #070910 0%, #0d1325 45%, #121a31 100%);
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+#root {
+    min-height: 100vh;
+}
+
+.app-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 28px 16px 40px;
+}
+
+.app-header {
+    background: linear-gradient(130deg, rgba(22, 30, 55, 0.9), rgba(14, 20, 37, 0.85));
+    border: 1px solid rgba(170, 179, 205, 0.25);
+    border-radius: 24px;
+    padding: 32px 28px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
+    margin-bottom: 28px;
+}
+
+.app-header h1 {
+    font-family: "Sora", sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.05;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, var(--text-main) 0%, var(--focus) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.app-header p {
+    color: var(--text-muted);
+    font-size: 1rem;
+    max-width: 60ch;
+    opacity: 0.9;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    animation: slideUp 0.6s ease-out;
+}
+
+.no-products {
+    grid-column: 1 / -1;
+    border: 2px dashed var(--stroke);
+    border-radius: 16px;
+    padding: 40px 24px;
+    text-align: center;
+    color: var(--text-muted);
+    background: rgba(18, 26, 49, 0.6);
+    font-size: 1.1rem;
+}
+
+/* Loading & Error States */
+.loading-container {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.error-container {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-align: center;
+}
+
+.error-container h2 {
+    color: var(--brand);
+    font-size: 1.5rem;
+}
+
+.error-container p,
+.loading-container p {
+    color: var(--text-muted);
+}
+
+.spinner {
+    width: 44px;
+    height: 44px;
+    border: 4px solid rgba(170, 179, 205, 0.24);
+    border-top-color: var(--brand);
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .app-container {
+        padding: 20px 12px 30px;
+    }
+
+    .app-header {
+        border-radius: 18px;
+        padding: 24px 18px;
+        margin-bottom: 20px;
+    }
+
+    .app-header h1 {
+        font-size: clamp(1.5rem, 4vw, 2.5rem);
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .app-container {
+        padding: 16px 10px 24px;
+    }
+
+    .app-header {
+        border-radius: 16px;
+        padding: 18px 14px;
+        margin-bottom: 16px;
+    }
+
+    .app-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .products-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+}
