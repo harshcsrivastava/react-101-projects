@@ -1,0 +1,119 @@
+@font-face {
+  font-family: 'Inter Local';
+  src: url('./Inter/Inter-VariableFont_opsz,wght.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter Local';
+  src: url('./Inter/Inter-Italic-VariableFont_opsz,wght.ttf') format('truetype');
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Mono Local';
+  src: url('./Geist_Mono/GeistMono-VariableFont_wght.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Mono Local';
+  src: url('./Geist_Mono/GeistMono-Italic-VariableFont_wght.ttf') format('truetype');
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins Local';
+  src: url('./Poppins/Poppins-Regular.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins Local';
+  src: url('./Poppins/Poppins-Medium.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins Local';
+  src: url('./Poppins/Poppins-SemiBold.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins Local';
+  src: url('./Poppins/Poppins-Bold.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins Local';
+  src: url('./Poppins/Poppins-Italic.ttf') format('truetype');
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Indian Saman';
+  src: url('./theme_indian_saman.TTF') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Japanese Ramen';
+  src: url('./japanese/JAPAN RAMEN.otf') format('opentype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Minecraft';
+  src: url('./MinecraftTen-VGORe.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+.font-theme-indian {
+  font-family: 'Indian Saman', 'Poppins Local', serif;
+}
+
+.font-theme-sakura {
+  font-family: 'Japanese Ramen', 'Poppins Local', sans-serif;
+}
+
+.font-theme-dark {
+  font-family: 'Geist Mono Local', monospace;
+}
+
+.font-theme-light {
+  font-family: 'Inter Local', system-ui, sans-serif;
+}
+
+.font-theme-chai {
+  font-family: 'Poppins Local', system-ui, sans-serif;
+}
+
+.font-theme-Minecraft {
+  font-family: 'Minecraft', 'Geist Mono Local', monospace;
+}
