@@ -5,10 +5,11 @@ function App() {
     Array.from({ length: 9 }, () => 0)
   );
   const [selectedCell, setSelectedCell] = useState<number | null>(null);
+  const [scores, setScores] = useState({ X: 0, O: 0 });
 
   const players = [
-    { name: 'Player X', mark: 'X', score: 8 },
-    { name: 'Player O', mark: 'O', score: 6 },
+    { name: 'Player X', mark: 'X', score: scores.X },
+    { name: 'Player O', mark: 'O', score: scores.O },
   ];
 
   const CrossIcon = () => (
@@ -46,13 +47,18 @@ function App() {
 
   const [isX, setIsX] = useState(true);
   const [winner, setWinner] = useState<string | null>(null);
+  const [result, setResult] = useState('In progress');
+
+  const handleRestart = () => {
+    setBoard(Array.from({ length: 9 }, () => 0));
+    setSelectedCell(null);
+    setIsX(true);
+    setWinner(null);
+    setResult('In progress');
+  };
 
   const handleCellClick = (index: number) => {
-    if(winner) return;
-    if (board.every((cell) => cell !== 0) && !winner) {
-      setWinner('Draw');
-      return;
-    }
+    if (winner) return;
     if (board[index] !== 0) return;
 
     setSelectedCell(index);
@@ -66,7 +72,6 @@ function App() {
   };
 
   useEffect(() => {
-    console.log(board);
     const checkDiagonalWin = (): string | null => {
       let sumMain = 0;
       let sumAnti = 0;
@@ -81,10 +86,8 @@ function App() {
         sumAnti += board[i];
       }
 
-      if (sumMain === 3 || sumAnti === 3)
-        return 'X';
-      if (sumMain === -3 || sumAnti === -3 )
-        return 'O';
+      if (sumMain === 3 || sumAnti === 3) return 'X';
+      if (sumMain === -3 || sumAnti === -3) return 'O';
       return null;
     };
 
@@ -132,11 +135,20 @@ function App() {
     };
 
     const val = checkDiagonalWin() || checkHorizontal() || checkVertical();
-    if(val && !winner){
-      setWinner(val)
+    if (val && !winner) {
+      setWinner(val);
+      setResult(`${val} wins`);
+      setScores((prevScores) => ({
+        ...prevScores,
+        [val]: prevScores[val as 'X' | 'O'] + 1,
+      }));
+      return;
     }
-    console.log(val);
-  }, [board]);
+
+    if (!val && board.every((cell) => cell !== 0) && !winner) {
+      setResult('Draw');
+    }
+  }, [board, winner]);
 
   const renderMark = (value: number) => {
     if (value === 1) return <CrossIcon />;
@@ -145,6 +157,7 @@ function App() {
   };
 
   const activeMark = isX ? 'X' : 'O';
+  const highlightedMark = winner && winner !== 'Draw' ? winner : activeMark;
 
   return (
     <main className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,_#fff36a_0%,_#fff36a_18%,_#f5efe6_18%,_#f5efe6_48%,_#f03c3c_48%,_#f03c3c_56%,_#f5efe6_56%,_#f5efe6_100%)] px-4 py-6 text-black sm:px-6 lg:px-8">
@@ -168,15 +181,15 @@ function App() {
               <p className="text-[0.65rem] font-black uppercase tracking-[0.35em]">
                 Current Turn
               </p>
-              <p className="mt-2 text-3xl font-black">{isX ? 'X' : 'O'}</p>
+              <p className="mt-2 text-3xl font-black">
+                {winner && winner !== 'Draw' ? winner : isX ? 'X' : 'O'}
+              </p>
             </div>
             <div className="border-[3px] border-black bg-[#fff36a] p-3 shadow-[6px_6px_0_#000]">
               <p className="text-[0.65rem] font-black uppercase tracking-[0.35em]">
                 Status
               </p>
-              <p className="mt-2 text-lg font-black uppercase">
-                Mock board only
-              </p>
+              <p className="mt-2 text-lg font-black uppercase">{result}</p>
             </div>
             <div className="border-[3px] border-black bg-[#66d9ff] p-3 shadow-[6px_6px_0_#000]">
               <p className="text-[0.65rem] font-black uppercase tracking-[0.35em]">
@@ -199,10 +212,13 @@ function App() {
                 </h2>
               </div>
 
-              <div className="hidden items-center gap-2 rounded-full border-2 border-black bg-white px-3 py-2 text-xs font-black uppercase tracking-[0.35em] sm:flex">
-                <span className="inline-flex h-3 w-3 rounded-full bg-[#f03c3c]" />
-                Hard-edged layout
-              </div>
+              <button
+                type="button"
+                onClick={handleRestart}
+                className="hidden items-center gap-2 rounded-full border-2 border-black bg-white px-3 py-2 text-xs font-black uppercase tracking-[0.35em] shadow-[4px_4px_0_#000] transition-transform hover:-translate-x-1 hover:-translate-y-1 sm:flex"
+              >
+                Restart board
+              </button>
             </div>
 
             <div className="grid aspect-square grid-cols-3 gap-0 border-[4px] border-black bg-black shadow-[12px_12px_0_#000]">
@@ -231,7 +247,7 @@ function App() {
                 {players.map((player) => (
                   <article
                     key={player.name}
-                    className={`flex items-center justify-between gap-4 border-[3px] border-black p-3 shadow-[4px_4px_0_#000] ${player.mark === activeMark ? (player.mark === 'X' ? 'bg-[#fff36a]' : 'bg-[#f03c3c] text-white') : 'bg-white'}`}
+                    className={`flex items-center justify-between gap-4 border-[3px] border-black p-3 shadow-[4px_4px_0_#000] ${player.mark === highlightedMark ? (player.mark === 'X' ? 'bg-[#fff36a]' : 'bg-[#f03c3c] text-white') : 'bg-white'}`}
                   >
                     <div>
                       <p className="text-xs font-black uppercase tracking-[0.35em] text-black/60">
@@ -255,17 +271,32 @@ function App() {
               <p className="text-xs font-black uppercase tracking-[0.5em] text-black/70">
                 Visual Notes
               </p>
-              <ul className="mt-4 space-y-3 text-sm font-semibold uppercase tracking-[0.2em]">
-                <li className="border-l-4 border-[#f03c3c] pl-3">
-                  Thick borders and hard shadows
-                </li>
-                <li className="border-l-4 border-[#66d9ff] pl-3">
-                  Oversized type and poster-like rhythm
-                </li>
-                <li className="border-l-4 border-[#fff36a] pl-3">
-                  X and O icons built as inline SVG
-                </li>
-              </ul>
+              <div className="mt-4 space-y-4">
+                <div className="border-[3px] border-black bg-[#fff36a] p-3 shadow-[4px_4px_0_#000]">
+                  <p className="text-xs font-black uppercase tracking-[0.35em] text-black/60">
+                    Result
+                  </p>
+                  <p className="mt-2 text-lg font-black uppercase">{result}</p>
+                </div>
+
+                <div className="border-[3px] border-black bg-[#66d9ff] p-3 shadow-[4px_4px_0_#000]">
+                  <p className="text-xs font-black uppercase tracking-[0.35em] text-black/60">
+                    Score
+                  </p>
+                  <div className="mt-2 flex items-center justify-between gap-3 text-lg font-black uppercase">
+                    <span>X {scores.X}</span>
+                    <span>O {scores.O}</span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleRestart}
+                  className="w-full border-[3px] border-black bg-[#f03c3c] px-4 py-3 text-sm font-black uppercase tracking-[0.35em] text-white shadow-[4px_4px_0_#000] transition-transform hover:-translate-x-1 hover:-translate-y-1"
+                >
+                  Restart Game
+                </button>
+              </div>
             </section>
           </aside>
         </section>
