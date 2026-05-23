@@ -24,7 +24,8 @@
 
 @font-face {
   font-family: 'Geist Mono Local';
-  src: url('./Geist_Mono/GeistMono-Italic-VariableFont_wght.ttf') format('truetype');
+  src: url('./Geist_Mono/GeistMono-Italic-VariableFont_wght.ttf')
+    format('truetype');
   font-style: italic;
   font-weight: 100 900;
   font-display: swap;
@@ -87,6 +88,22 @@
 }
 
 @font-face {
+  font-family: 'Japanese Ramen';
+  src: url('./japanese/The Last Shuriken.otf') format('opentype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Japanese Ramen';
+  src: url('./japanese/The Last Shuriken.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'Minecraft';
   src: url('./MinecraftTen-VGORe.ttf') format('truetype');
   font-style: normal;
@@ -99,6 +116,10 @@
 }
 
 .font-theme-sakura {
+  font-family: 'Japanese Ramen', 'Poppins Local', sans-serif;
+}
+
+.font-theme-samurai {
   font-family: 'Japanese Ramen', 'Poppins Local', sans-serif;
 }
 
