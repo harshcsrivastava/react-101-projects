@@ -45,8 +45,14 @@ function App() {
   );
 
   const [isX, setIsX] = useState(true);
+  const [winner, setWinner] = useState<string | null>(null);
 
   const handleCellClick = (index: number) => {
+    if(winner) return;
+    if (board.every((cell) => cell !== 0) && !winner) {
+      setWinner('Draw');
+      return;
+    }
     if (board[index] !== 0) return;
 
     setSelectedCell(index);
@@ -56,12 +62,80 @@ function App() {
       nextBoard[index] = isX ? 1 : -1;
       return nextBoard;
     });
-
     setIsX(!isX);
   };
 
   useEffect(() => {
     console.log(board);
+    const checkDiagonalWin = (): string | null => {
+      let sumMain = 0;
+      let sumAnti = 0;
+
+      // main diagonal: 0, 4, 8
+      for (let i = 0; i < 3; i++) {
+        sumMain += board[i * 4];
+      }
+
+      // anti-diagonal: 2, 4, 6
+      for (let i = 2; i <= 6; i += 2) {
+        sumAnti += board[i];
+      }
+
+      if (sumMain === 3 || sumAnti === 3)
+        return 'X';
+      if (sumMain === -3 || sumAnti === -3 )
+        return 'O';
+      return null;
+    };
+
+    const checkHorizontal = (): string | null => {
+      let sumLineOne = 0;
+      let sumLineTwo = 0;
+      let sumLineThree = 0;
+
+      for (let i = 0; i < 3; i++) {
+        sumLineOne += board[i];
+      }
+      for (let i = 3; i < 6; i++) {
+        sumLineTwo += board[i];
+      }
+      for (let i = 6; i < 9; i++) {
+        sumLineThree += board[i];
+      }
+      if (sumLineOne === 3 || sumLineTwo === 3 || sumLineThree === 3)
+        return 'X';
+      if (sumLineOne === -3 || sumLineTwo === -3 || sumLineThree === -3)
+        return 'O';
+      return null;
+    };
+
+    const checkVertical = (): string | null => {
+      let sumLineOne = 0;
+      let sumLineTwo = 0;
+      let sumLineThree = 0;
+
+      for (let i = 0; i <= 6; i += 3) {
+        sumLineOne += board[i];
+      }
+      for (let i = 1; i <= 7; i += 3) {
+        sumLineTwo += board[i];
+      }
+      for (let i = 2; i <= 8; i += 3) {
+        sumLineThree += board[i];
+      }
+
+      if (sumLineOne === 3 || sumLineTwo === 3 || sumLineThree === 3)
+        return 'X';
+      if (sumLineOne === -3 || sumLineTwo === -3 || sumLineThree === -3)
+        return 'O';
+      return null;
+    };
+
+    const val = checkDiagonalWin() || checkHorizontal() || checkVertical();
+    if(val && !winner){
+      setWinner(val)
+    }
+    console.log(val);
   }, [board]);
 
   const renderMark = (value: number) => {
