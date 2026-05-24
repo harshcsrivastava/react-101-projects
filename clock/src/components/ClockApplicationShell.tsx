@@ -152,15 +152,6 @@ useEffect(() => {
   return () => clearInterval(interval)
 }, [])
 
-console.log(time)
-  // const value =
-  //   timeFormat === '12hr'
-  //     ? showSeconds
-  //       ? '09 : 41 : 08'
-  //       : '09 : 41'
-  //     : showSeconds
-  //       ? '21 : 41 : 08'
-  //       : '21 : 41';
 const value = time.toLocaleTimeString("en-US", {
           hour: "2-digit",
           minute: "2-digit",
