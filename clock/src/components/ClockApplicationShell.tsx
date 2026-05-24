@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import type {
   ClockMode,
   ClockType,
@@ -142,38 +142,98 @@ function ClockDigits({
   showSeconds: boolean;
   timeFormat: TimeFormat;
 }) {
-  const value =
-    timeFormat === '12hr'
-      ? showSeconds
-        ? '09 : 41 : 08'
-        : '09 : 41'
-      : showSeconds
-        ? '21 : 41 : 08'
-        : '21 : 41';
+  
+const [time, setTime] = useState(new Date());
+const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-  if (clockType === 'analog') {
-    return (
-      <div className="relative aspect-square w-full max-w-[26rem] sm:max-w-[32rem]">
-        <div className="absolute inset-0 rounded-full border border-current/12" />
-        <div className="absolute inset-[13%] rounded-full border border-current/8" />
+useEffect(() => {
+  const interval = setInterval(() => setTime(new Date()), 1000)
+  
+  return () => clearInterval(interval)
+}, [])
+
+console.log(time)
+  // const value =
+  //   timeFormat === '12hr'
+  //     ? showSeconds
+  //       ? '09 : 41 : 08'
+  //       : '09 : 41'
+  //     : showSeconds
+  //       ? '21 : 41 : 08'
+  //       : '21 : 41';
+const value = time.toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: showSeconds ? "2-digit" : undefined,
+          hour12: timeFormat === "12hr" ? true : false,
+          timeZone: userTimeZone,
+        })
+  // if (clockType === 'analog') {
+  //   return (
+  //     <div className="relative aspect-square w-full max-w-[26rem] sm:max-w-[32rem]">
+  //       <div className="absolute inset-0 rounded-full border border-current/12" />
+  //       <div className="absolute inset-[13%] rounded-full border border-current/8" />
+  //       <div
+  //         className="absolute left-1/2 top-1/2 h-[28%] w-[0.45rem] origin-bottom -translate-x-1/2 rounded-full bg-current"
+  //         style={{ transform: 'translate(-50%, -100%) rotate(18deg)' }}
+  //       />
+  //       <div
+  //         className="absolute left-1/2 top-1/2 h-[36%] w-[0.28rem] origin-bottom -translate-x-1/2 rounded-full bg-current/80"
+  //         style={{ transform: 'translate(-50%, -100%) rotate(96deg)' }}
+  //       />
+  //       {showSeconds ? (
+  //         <div
+  //           className="absolute left-1/2 top-1/2 h-[40%] w-[0.16rem] origin-bottom -translate-x-1/2 rounded-full bg-rose-400 shadow-[0_0_16px_currentColor]"
+  //           style={{ transform: 'translate(-50%, -100%) rotate(188deg)' }}
+  //         />
+  //       ) : null}
+  //       <div className="absolute left-1/2 top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-current" />
+  //     </div>
+  //   );
+  // }
+
+  if (clockType === "analog") {
+  const hours = time.getHours();
+  const minutes = time.getMinutes();
+  const seconds = time.getSeconds();
+
+  // Calculate angles
+  const hourAngle = (hours % 12) * 30 + minutes * 0.5; // 30° per hour + fraction
+  const minuteAngle = minutes * 6 + seconds * 0.1;     // 6° per minute + fraction
+  const secondAngle = seconds * 6;                     // 6° per second
+
+  return (
+    <div className="relative aspect-square w-full max-w-[26rem] sm:max-w-[32rem]">
+      {/* Outer rings */}
+      <div className="absolute inset-0 rounded-full border border-current/12" />
+      <div className="absolute inset-[13%] rounded-full border border-current/8" />
+
+      {/* Hour hand */}
+      <div
+        className="absolute left-1/2 top-1/2 h-[28%] w-[0.45rem] origin-bottom -translate-x-1/2 rounded-full bg-current"
+        style={{ transform: `translate(-50%, -100%) rotate(${hourAngle}deg)` }}
+      />
+
+      {/* Minute hand */}
+      <div
+        className="absolute left-1/2 top-1/2 h-[36%] w-[0.28rem] origin-bottom -translate-x-1/2 rounded-full bg-current/80"
+        style={{ transform: `translate(-50%, -100%) rotate(${minuteAngle}deg)` }}
+      />
+
+      {/* Second hand (optional) */}
+      {showSeconds && (
         <div
-          className="absolute left-1/2 top-1/2 h-[28%] w-[0.45rem] origin-bottom -translate-x-1/2 rounded-full bg-current"
-          style={{ transform: 'translate(-50%, -100%) rotate(18deg)' }}
+          className="absolute left-1/2 top-1/2 h-[40%] w-[0.16rem] origin-bottom -translate-x-1/2 rounded-full bg-rose-400 shadow-[0_0_16px_currentColor]"
+          style={{ transform: `translate(-50%, -100%) rotate(${secondAngle}deg)` }}
         />
-        <div
-          className="absolute left-1/2 top-1/2 h-[36%] w-[0.28rem] origin-bottom -translate-x-1/2 rounded-full bg-current/80"
-          style={{ transform: 'translate(-50%, -100%) rotate(96deg)' }}
-        />
-        {showSeconds ? (
-          <div
-            className="absolute left-1/2 top-1/2 h-[40%] w-[0.16rem] origin-bottom -translate-x-1/2 rounded-full bg-rose-400 shadow-[0_0_16px_currentColor]"
-            style={{ transform: 'translate(-50%, -100%) rotate(188deg)' }}
-          />
-        ) : null}
-        <div className="absolute left-1/2 top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-current" />
-      </div>
-    );
-  }
+      )}
+
+      {/* Center dot */}
+      <div className="absolute left-1/2 top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-current" />
+    </div>
+  );
+}
+
 
   return (
     <div className="w-full text-center">
