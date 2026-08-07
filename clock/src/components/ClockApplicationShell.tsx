@@ -1,13 +1,15 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode, useRef } from 'react';
 import type {
   ClockMode,
   ClockType,
   ThemeKey,
   TimeFormat,
+  ThemePreset,
 } from '../themePresets';
 import { themeOrder, themePresets } from '../themePresets';
 import Stopwatch from '../modes/Stopwatch';
 import Timer from '../modes/Timer';
+import { Watch } from 'lucide-react';
 
 interface ClockApplicationShellProps {
   currentMode: ClockMode;
@@ -30,79 +32,120 @@ function cx(...values: Array<string | false | null | undefined>) {
   return values.filter(Boolean).join(' ');
 }
 
-function ChipButton({
+function ThemeDropdown({
+  currentTheme,
+  onThemeChange,
+  theme,
+}: {
+  currentTheme: ThemeKey;
+  onThemeChange: (theme: ThemeKey) => void;
+  theme: ThemePreset;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isOpen]);
+
+  return (
+    <div className="relative w-full max-w-xs" ref={dropdownRef}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className={cx(
+          'w-full flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+          theme.chromeClass,
+          'border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent'
+        )}
+      >
+        <span className="truncate">Theme: {themePresets[currentTheme].label}</span>
+        <svg
+          className={cx(
+            'h-4 w-4 flex-shrink-0 transition-transform',
+            isOpen && 'rotate-180'
+          )}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div
+          className={cx(
+            'absolute top-full left-0 right-0 mt-2 rounded-lg border z-50 shadow-lg backdrop-blur-sm',
+            theme.chromeClass
+          )}
+        >
+          <div className="max-h-64 overflow-y-auto py-1">
+            {themeOrder.map((themeKey) => (
+              <button
+                key={themeKey}
+                type="button"
+                onClick={() => {
+                  onThemeChange(themeKey);
+                  setIsOpen(false);
+                }}
+                className={cx(
+                  'w-full px-4 py-2.5 text-left text-sm transition-colors flex items-center justify-between',
+                  currentTheme === themeKey
+                    ? theme.buttonActiveClass
+                    : 'hover:bg-white/5 opacity-80 hover:opacity-100'
+                )}
+              >
+                <span>{themePresets[themeKey].label}</span>
+                {currentTheme === themeKey && (
+                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ControlButton({
   active,
   children,
   onClick,
   className,
+  ariaLabel,
 }: {
   active: boolean;
   children: ReactNode;
   onClick: () => void;
   className?: string;
+  ariaLabel?: string;
 }) {
   return (
     <button
       type="button"
       aria-pressed={active}
+      aria-label={ariaLabel}
       onClick={onClick}
       className={cx(
-        'inline-flex items-center justify-center rounded-full border px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.25em] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent sm:px-4 sm:text-[11px]',
+        'inline-flex items-center justify-center rounded-lg px-2.5 py-1.5 text-xs font-semibold uppercase tracking-widest transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent',
         className
       )}
     >
       {children}
     </button>
-  );
-}
-
-function ThemeChip({
-  label,
-  active,
-  onClick,
-}: {
-  label: string;
-  active: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      aria-pressed={active}
-      onClick={onClick}
-      className={cx(
-        'inline-flex items-center rounded-full border px-2.5 py-1.5 text-[9px] font-semibold uppercase tracking-[0.2em] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent sm:px-3 sm:py-2 sm:text-[10px]',
-        active ? 'ring-1 ring-inset ring-current' : 'opacity-80'
-      )}
-    >
-      {label}
-    </button>
-  );
-}
-
-function FullscreenIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-4 w-4">
-      <path
-        d="M9 3H3v6m12-6h6v6M9 21H3v-6m12 6h6v-6"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function ExitFullscreenIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-4 w-4">
-      <path
-        d="M9 9H3V3m12 6h6V3M9 15H3v6m12-6h6v6"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-      />
-    </svg>
   );
 }
 
@@ -253,9 +296,11 @@ function ModeSurface({ currentMode }: { currentMode: ClockMode }) {
 function ModeDock({
   currentMode,
   onModeChange,
+  theme,
 }: {
   currentMode: ClockMode;
   onModeChange: (mode: ClockMode) => void;
+  theme: ThemePreset;
 }) {
   const inactiveModes = (['clock', 'timer', 'stopwatch'] as ClockMode[]).filter(
     (mode) => mode !== currentMode
@@ -264,13 +309,17 @@ function ModeDock({
   return (
     <div className="flex items-center gap-2">
       {inactiveModes.map((mode) => (
-        <ChipButton
+        <ControlButton
           key={mode}
           active={false}
           onClick={() => onModeChange(mode)}
+          className={cx(
+            theme.buttonClass,
+            'border'
+          )}
         >
           {mode}
-        </ChipButton>
+        </ControlButton>
       ))}
     </div>
   );
@@ -351,6 +400,7 @@ export default function ClockApplicationShell({
     );
   }
 
+  // Responsive layout: Mobile < 768px, Tablet 768px-1199px, Desktop >= 1200px
   return (
     <div
       className={cx(
@@ -361,6 +411,7 @@ export default function ClockApplicationShell({
     >
       <div className="pointer-events-none absolute inset-0 opacity-35 [background-image:radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.08)_1px,transparent_0)] [background-size:20px_20px]" />
       <div className="pointer-events-none absolute inset-0 z-0 opacity-24 blur-3xl [background-image:linear-gradient(rgba(255,255,255,0.11)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.11)_1px,transparent_1px),radial-gradient(circle_at_top,rgba(255,255,255,0.16),transparent_46%)] [background-size:56px_56px,56px_56px,100%_100%] [mask-image:linear-gradient(to_bottom,rgba(0,0,0,0.95),rgba(0,0,0,0.4)_42%,rgba(0,0,0,0.08)_76%,transparent_100%)]" />
+      
       {currentTheme === 'font-theme-Minecraft' ? (
         <>
           <div className="pointer-events-none absolute inset-0 z-0 opacity-58 blur-2xl [background-image:radial-gradient(circle_at_1px_1px,rgba(255,233,120,0.42)_1px,transparent_0)] [background-size:44px_44px] [mask-image:linear-gradient(to_bottom,rgba(0,0,0,0.95),rgba(0,0,0,0.24)_45%,rgba(0,0,0,0.03))]" />
@@ -452,149 +503,338 @@ export default function ClockApplicationShell({
       ) : null}
 
       <div className="relative z-10 flex h-full w-full flex-col">
-        {!controlsHidden ? (
-          <header className="z-20 px-3 pt-3 sm:px-4 lg:px-6 lg:pt-4">
-            <div
-              className={cx(
-                'mx-auto flex w-fit max-w-[calc(100vw-1.5rem)] items-center justify-center rounded-[1rem] px-3 py-2 sm:px-4 sm:py-3',
-                theme.chromeClass
-              )}
-            >
-              <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
-                {themeOrder.map((themeKey) => (
-                  <ThemeChip
-                    key={themeKey}
-                    label={themePresets[themeKey].label}
-                    active={currentTheme === themeKey}
-                    onClick={() => onThemeChange(themeKey)}
-                  />
-                ))}
+        {/* MOBILE LAYOUT: < 768px (max-md) */}
+        <div className="hidden max-md:flex flex-col h-full w-full px-3 py-4 gap-6 justify-center items-center">
+          {/* Clock Display */}
+          <div className="shrink-0">
+            {currentMode === 'clock' ? (
+              <div className="flex justify-center">
+                <ClockDigits
+                  clockType={clockType}
+                  showSeconds={showSeconds}
+                  timeFormat={timeFormat}
+                />
               </div>
-            </div>
-          </header>
-        ) : null}
+            ) : (
+              <div className="flex justify-center min-h-50">
+                <ModeSurface currentMode={currentMode} />
+              </div>
+            )}
+          </div>
 
-        <main
-          className={cx(
-            'relative flex min-h-0 flex-1 items-center justify-center overflow-hidden px-3 sm:px-4 lg:px-6',
-            controlsHidden ? 'pt-0 pb-0' : 'pb-[4rem] pt-[4rem]'
-          )}
-        >
-          {currentMode === 'clock' ? (
-            <div
-              className={cx(
-                'relative flex h-full min-h-0 w-full items-center justify-center',
-                theme.stageClass
-              )}
-            >
-              <ClockDigits
-                clockType={clockType}
-                showSeconds={showSeconds}
-                timeFormat={timeFormat}
+          {/* Mode Dock */}
+          {!controlsHidden && (
+            <div className="shrink-0">
+              <ModeDock
+                currentMode={currentMode}
+                onModeChange={onModeChange}
+                theme={theme}
               />
             </div>
-          ) : (
-            <div
-              className={cx(
-                'relative flex h-full min-h-0 w-full items-center justify-center',
-                theme.stageClass
-              )}
-            >
-              <ModeSurface currentMode={currentMode} />
+          )}
+
+          {/* Theme Dropdown */}
+          <div className="shrink-0 w-full max-w-xs px-2">
+            <ThemeDropdown
+              currentTheme={currentTheme}
+              onThemeChange={onThemeChange}
+              theme={theme}
+            />
+          </div>
+
+          {/* Dynamic Control Island */}
+          {!controlsHidden && (
+            <div className="shrink-0 flex items-center justify-center gap-1.5">
+              <ControlButton
+                active={clockType === 'analog'}
+                onClick={() =>
+                  onClockTypeChange(
+                    clockType === 'analog' ? 'digital' : 'analog'
+                  )
+                }
+                className={cx(
+                  theme.buttonClass,
+                  'border',
+                  clockType === 'analog' && theme.buttonActiveClass
+                )}
+              >
+                <Watch size={16} />
+              </ControlButton>
+              <ControlButton
+                active={timeFormat === '24hr'}
+                onClick={onToggleTimeFormat}
+                className={cx(
+                  theme.buttonClass,
+                  'border',
+                  timeFormat === '24hr' && theme.buttonActiveClass
+                )}
+              >
+                12h
+              </ControlButton>
+              <ControlButton
+                active={showSeconds}
+                onClick={onToggleShowSeconds}
+                className={cx(
+                  theme.buttonClass,
+                  'border',
+                  showSeconds && theme.buttonActiveClass
+                )}
+              >
+                :00
+              </ControlButton>
+              <button
+                type="button"
+                aria-pressed={isFullscreen}
+                aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+                onClick={onToggleFullscreen}
+                className={cx(
+                  'inline-flex items-center justify-center rounded-lg px-2.5 py-1.5 text-xs font-semibold uppercase tracking-widest transition border',
+                  theme.buttonClass,
+                  isFullscreen && theme.buttonActiveClass
+                )}
+              >
+                ⛶
+              </button>
             </div>
           )}
-        </main>
+        </div>
 
-        {!isFullscreen ? (
-          <div className="pointer-events-none relative inset-x-0 bottom-0 z-20 px-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] sm:px-4 lg:px-6 lg:pb-[calc(env(safe-area-inset-bottom)+1rem)]">
-            <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-3">
-              {!controlsHidden ? (
-                <div className="pointer-events-auto flex flex-wrap items-center justify-center gap-2 rounded-full bg-transparent px-0 py-0 sm:justify-start">
-                  <ModeDock
-                    currentMode={currentMode}
-                    onModeChange={onModeChange}
+        {/* TABLET LAYOUT: 768px - 1023px (md:lg) */}
+        <div className="hidden md:flex lg:hidden flex-col h-full w-full justify-center items-center gap-8 px-6">
+          {/* Clock Display */}
+          <div className="shrink-0">
+            {currentMode === 'clock' ? (
+              <div className="flex justify-center">
+                <ClockDigits
+                  clockType={clockType}
+                  showSeconds={showSeconds}
+                  timeFormat={timeFormat}
+                />
+              </div>
+            ) : (
+              <div className="flex justify-center min-h-60">
+                <ModeSurface currentMode={currentMode} />
+              </div>
+            )}
+          </div>
+
+          {/* Mode Dock */}
+          {!controlsHidden && (
+            <div className="shrink-0">
+              <ModeDock
+                currentMode={currentMode}
+                onModeChange={onModeChange}
+                theme={theme}
+              />
+            </div>
+          )}
+
+          {/* Theme Dropdown */}
+          <div className="shrink-0 w-full max-w-sm px-4">
+            <ThemeDropdown
+              currentTheme={currentTheme}
+              onThemeChange={onThemeChange}
+              theme={theme}
+            />
+          </div>
+
+          {/* Dynamic Control Island */}
+          {!controlsHidden && (
+            <div className="shrink-0 flex items-center justify-center gap-2">
+              <ControlButton
+                active={clockType === 'analog'}
+                onClick={() =>
+                  onClockTypeChange(
+                    clockType === 'analog' ? 'digital' : 'analog'
+                  )
+                }
+                className={cx(
+                  theme.buttonClass,
+                  'border',
+                  clockType === 'analog' && theme.buttonActiveClass
+                )}
+              >
+                <Watch size={16} />
+              </ControlButton>
+              <ControlButton
+                active={timeFormat === '24hr'}
+                onClick={onToggleTimeFormat}
+                className={cx(
+                  theme.buttonClass,
+                  'border',
+                  timeFormat === '24hr' && theme.buttonActiveClass
+                )}
+              >
+                12h
+              </ControlButton>
+              <ControlButton
+                active={showSeconds}
+                onClick={onToggleShowSeconds}
+                className={cx(
+                  theme.buttonClass,
+                  'border',
+                  showSeconds && theme.buttonActiveClass
+                )}
+              >
+              :00
+              </ControlButton>
+              <button
+                type="button"
+                aria-pressed={isFullscreen}
+                aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+                onClick={onToggleFullscreen}
+                className={cx(
+                  'inline-flex items-center justify-center rounded-lg px-2.5 py-1.5 text-xs font-semibold uppercase tracking-widest transition border',
+                  theme.buttonClass,
+                  isFullscreen && theme.buttonActiveClass
+                )}
+              >
+                ⛶
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* DESKTOP LAYOUT: >= 1024px (lg) */}
+        <div className="hidden lg:flex flex-col h-full w-full relative">
+          {/* Theme Dropdown - Top Center */}
+          {!controlsHidden && (
+            <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-20 w-full max-w-xs px-6">
+              <ThemeDropdown
+                currentTheme={currentTheme}
+                onThemeChange={onThemeChange}
+                theme={theme}
+              />
+            </div>
+          )}
+
+          {/* Main Clock Display - Center */}
+          <main className="flex-1 flex items-center justify-center">
+            <div className="flex flex-col items-center justify-center gap-12">
+              {currentMode === 'clock' ? (
+                <div className={cx(
+                  'relative flex h-full items-center justify-center',
+                  theme.stageClass
+                )}>
+                  <ClockDigits
+                    clockType={clockType}
+                    showSeconds={showSeconds}
+                    timeFormat={timeFormat}
                   />
                 </div>
-              ) : null}
-
-              <div className="pointer-events-auto flex flex-wrap items-center justify-center gap-2 rounded-full bg-transparent px-0 py-0 sm:justify-center">
-                {!controlsHidden ? (
-                  <button
-                    type="button"
-                    aria-pressed={isFullscreen}
-                    aria-label={
-                      isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'
-                    }
-                    onClick={onToggleFullscreen}
-                    className={cx(
-                      'inline-flex items-center justify-center gap-2 rounded-full px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.25em] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent sm:px-4 sm:text-[11px]',
-                      'border-0 bg-transparent',
-                      isFullscreen ? theme.buttonActiveClass : ''
-                    )}
-                  >
-                    {isFullscreen ? <ExitFullscreenIcon /> : <FullscreenIcon />}
-                    fullscreen
-                  </button>
-                ) : null}
-              </div>
-
-              {!controlsHidden ? (
-                <div className="pointer-events-auto flex flex-wrap items-center justify-center gap-2 rounded-full bg-transparent px-0 py-0 sm:justify-end">
-                  <ChipButton
-                    active={clockType === 'analog'}
-                    onClick={() =>
-                      onClockTypeChange(
-                        clockType === 'analog' ? 'digital' : 'analog'
-                      )
-                    }
-                    className={cx(
-                      'border-0 bg-transparent',
-                      clockType === 'analog'
-                        ? 'bg-white/10 text-inherit'
-                        : 'opacity-80'
-                    )}
-                  >
-                    {clockType}
-                  </ChipButton>
-                  <ChipButton
-                    active={showSeconds}
-                    onClick={onToggleShowSeconds}
-                    className={cx(
-                      'border-0 bg-transparent',
-                      showSeconds ? 'bg-white/10 text-inherit' : 'opacity-80'
-                    )}
-                  >
-                    seconds
-                  </ChipButton>
-                  <ChipButton
-                    active={timeFormat === '24hr'}
-                    onClick={onToggleTimeFormat}
-                    className={cx(
-                      'border-0 bg-transparent',
-                      timeFormat === '24hr'
-                        ? 'bg-white/10 text-inherit'
-                        : 'opacity-80'
-                    )}
-                  >
-                    {timeFormat}
-                  </ChipButton>
+              ) : (
+                <div className={cx(
+                  'relative flex h-full min-h-[320px] items-center justify-center',
+                  theme.stageClass
+                )}>
+                  <ModeSurface currentMode={currentMode} />
                 </div>
-              ) : null}
+              )}
             </div>
-          </div>
-        ) : null}
+          </main>
 
-        {!isFullscreen ? (
+          {/* Bottom Controls */}
+          <div className="absolute bottom-6 inset-x-0 flex items-end justify-between px-6 pointer-events-none">
+            {/* Bottom Left: Mode Dock */}
+            {!controlsHidden && (
+              <div className="pointer-events-auto">
+                <ModeDock
+                  currentMode={currentMode}
+                  onModeChange={onModeChange}
+                  theme={theme}
+                />
+              </div>
+            )}
+
+            {/* Bottom Center: Fullscreen */}
+            {!controlsHidden && (
+              <div className="pointer-events-auto">
+                <button
+                  type="button"
+                  aria-pressed={isFullscreen}
+                  aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+                  onClick={onToggleFullscreen}
+                  className={cx(
+                    'inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-widest transition border',
+                    theme.buttonClass,
+                    isFullscreen && theme.buttonActiveClass
+                  )}
+                >
+                  ⛶ Fullscreen
+                </button>
+              </div>
+            )}
+
+            {/* Bottom Right: Control Island */}
+            {!controlsHidden && (
+              <div className="pointer-events-auto flex items-center gap-2">
+                <ControlButton
+                  active={clockType === 'analog'}
+                  onClick={() =>
+                    onClockTypeChange(
+                      clockType === 'analog' ? 'digital' : 'analog'
+                    )
+                  }
+                  className={cx(
+                    theme.buttonClass,
+                    'border',
+                    clockType === 'analog' && theme.buttonActiveClass
+                  )}
+                >
+                  {clockType}
+                </ControlButton>
+                <ControlButton
+                  active={showSeconds}
+                  onClick={onToggleShowSeconds}
+                  className={cx(
+                    theme.buttonClass,
+                    'border',
+                    showSeconds && theme.buttonActiveClass
+                  )}
+                >
+                  Seconds
+                </ControlButton>
+                <ControlButton
+                  active={timeFormat === '24hr'}
+                  onClick={onToggleTimeFormat}
+                  className={cx(
+                    theme.buttonClass,
+                    'border',
+                    timeFormat === '24hr' && theme.buttonActiveClass
+                  )}
+                >
+                  {timeFormat}
+                </ControlButton>
+              </div>
+            )}
+          </div>
+
+          {/* Visibility Toggle */}
+          {!isFullscreen && (
+            <button
+              type="button"
+              aria-pressed={controlsHidden}
+              aria-label={controlsHidden ? 'Show controls' : 'Hide controls'}
+              onClick={onToggleControlsHidden}
+              className="absolute bottom-6 right-6 z-30 inline-flex items-center justify-center rounded-lg border border-white/12 bg-black/20 p-2 text-current backdrop-blur-md transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+            >
+              <EyeIcon hidden={controlsHidden} />
+            </button>
+          )}
+        </div>
+
+        {/* Mobile Visibility Toggle */}
+        {!isFullscreen && (
           <button
             type="button"
             aria-pressed={controlsHidden}
             aria-label={controlsHidden ? 'Show controls' : 'Hide controls'}
             onClick={onToggleControlsHidden}
-            className="absolute bottom-3 right-3 z-30 inline-flex items-center justify-center rounded-full border border-white/12 bg-black/20 p-2 text-current backdrop-blur-md transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent sm:bottom-4 sm:right-4"
+            className="absolute bottom-3 right-3 md:hidden z-30 inline-flex items-center justify-center rounded-full border border-white/12 bg-black/20 p-2 text-current backdrop-blur-md transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
           >
             <EyeIcon hidden={controlsHidden} />
           </button>
-        ) : null}
+        )}
       </div>
     </div>
   );
