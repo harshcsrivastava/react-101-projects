@@ -477,7 +477,7 @@ export default function ClockApplicationShell({
         <main
           className={cx(
             'relative flex min-h-0 flex-1 items-center justify-center overflow-hidden px-3 sm:px-4 lg:px-6',
-            controlsHidden ? 'pt-0 pb-0' : 'pb-[6rem] pt-[6rem]'
+            controlsHidden ? 'pt-0 pb-0' : 'pb-[11rem] pt-[6rem] sm:pb-[8rem]'
           )}
         >
           {currentMode === 'clock' ? (
@@ -506,10 +506,10 @@ export default function ClockApplicationShell({
         </main>
 
         {!isFullscreen ? (
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 px-3 pb-3 sm:px-4 lg:px-6 lg:pb-4">
-            <div className="flex items-end justify-between gap-3">
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 px-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] sm:px-4 lg:px-6 lg:pb-[calc(env(safe-area-inset-bottom)+1rem)]">
+            <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-3">
               {!controlsHidden ? (
-                <div className="pointer-events-auto flex items-center gap-2 rounded-full bg-transparent px-0 py-0">
+                <div className="pointer-events-auto flex flex-wrap items-center justify-center gap-2 rounded-full bg-transparent px-0 py-0 sm:justify-start">
                   <ModeDock
                     currentMode={currentMode}
                     onModeChange={onModeChange}
@@ -517,7 +517,7 @@ export default function ClockApplicationShell({
                 </div>
               ) : null}
 
-              <div className="pointer-events-auto flex items-center rounded-full bg-transparent px-0 py-0">
+              <div className="pointer-events-auto flex flex-wrap items-center justify-center gap-2 rounded-full bg-transparent px-0 py-0 sm:justify-center">
                 {!controlsHidden ? (
                   <button
                     type="button"
@@ -539,7 +539,7 @@ export default function ClockApplicationShell({
               </div>
 
               {!controlsHidden ? (
-                <div className="pointer-events-auto flex items-center gap-2 rounded-full bg-transparent px-0 py-0">
+                <div className="pointer-events-auto flex flex-wrap items-center justify-center gap-2 rounded-full bg-transparent px-0 py-0 sm:justify-end">
                   <ChipButton
                     active={clockType === 'analog'}
                     onClick={() =>
