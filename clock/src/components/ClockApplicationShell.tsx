@@ -453,7 +453,7 @@ export default function ClockApplicationShell({
 
       <div className="relative z-10 flex h-full w-full flex-col">
         {!controlsHidden ? (
-          <header className="absolute left-0 right-0 top-0 z-20 px-3 pt-3 sm:px-4 lg:px-6 lg:pt-4">
+          <header className="z-20 px-3 pt-3 sm:px-4 lg:px-6 lg:pt-4">
             <div
               className={cx(
                 'mx-auto flex w-fit max-w-[calc(100vw-1.5rem)] items-center justify-center rounded-[1rem] px-3 py-2 sm:px-4 sm:py-3',
@@ -477,7 +477,7 @@ export default function ClockApplicationShell({
         <main
           className={cx(
             'relative flex min-h-0 flex-1 items-center justify-center overflow-hidden px-3 sm:px-4 lg:px-6',
-            controlsHidden ? 'pt-0 pb-0' : 'pb-[11rem] pt-[6rem] sm:pb-[8rem]'
+            controlsHidden ? 'pt-0 pb-0' : 'pb-[4rem] pt-[4rem]'
           )}
         >
           {currentMode === 'clock' ? (
@@ -506,7 +506,7 @@ export default function ClockApplicationShell({
         </main>
 
         {!isFullscreen ? (
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 px-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] sm:px-4 lg:px-6 lg:pb-[calc(env(safe-area-inset-bottom)+1rem)]">
+          <div className="pointer-events-none relative inset-x-0 bottom-0 z-20 px-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] sm:px-4 lg:px-6 lg:pb-[calc(env(safe-area-inset-bottom)+1rem)]">
             <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-3">
               {!controlsHidden ? (
                 <div className="pointer-events-auto flex flex-wrap items-center justify-center gap-2 rounded-full bg-transparent px-0 py-0 sm:justify-start">

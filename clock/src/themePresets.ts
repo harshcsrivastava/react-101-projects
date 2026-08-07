@@ -64,7 +64,7 @@ export const themePresets: Record<ThemeKey, ThemePreset> = {
     shellClass:
       'bg-[radial-gradient(circle_at_top_right,_rgba(255,219,182,0.94),_rgba(255,246,236,0.98)_34%,_#fffaf3_100%)] text-zinc-950',
     stageClass:
-      'rounded-[1.5rem] bg-[linear-gradient(180deg,_rgba(255,255,255,0.76),_rgba(255,249,240,0.9))] shadow-[0_24px_70px_rgba(168,103,58,0.12)] backdrop-blur-xl',
+      'rounded-[1.5rem] backdrop-blur-xl',
     panelClass: 'rounded-[1.25rem] border border-amber-900/8 bg-white/72',
     chromeClass: 'border-amber-900/10 bg-white/72 text-zinc-900',
     chipClass: 'border-amber-900/14 bg-white/80 text-zinc-700',
